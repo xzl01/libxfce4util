@@ -19,7 +19,7 @@
  * Boston, MA 02110-1301 USA
  */
 
-#if !defined(LIBXFCE4UTIL_INSIDE_LIBXFCE4UTIL_H) && !defined(LIBXFCE4UTIL_COMPILATION)
+#if !defined(_LIBXFCE4UTIL_INSIDE_LIBXFCE4UTIL_H) && !defined(LIBXFCE4UTIL_COMPILATION)
 #error "Only <libxfce4util/libxfce4util.h> can be included directly, this file may disappear or change contents"
 #endif
 
@@ -31,8 +31,8 @@
 G_BEGIN_DECLS
 
 #define LIBXFCE4UTIL_MAJOR_VERSION	4
-#define LIBXFCE4UTIL_MINOR_VERSION	16
-#define LIBXFCE4UTIL_MICRO_VERSION	0
+#define LIBXFCE4UTIL_MINOR_VERSION	18
+#define LIBXFCE4UTIL_MICRO_VERSION	2
 
 #define LIBXFCE4UTIL_CHECK_VERSION(major,minor,micro) \
   (LIBXFCE4UTIL_MAJOR_VERSION > (major) \

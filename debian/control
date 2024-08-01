@@ -3,7 +3,7 @@ Priority: optional
 Section: xfce
 Maintainer: Debian Xfce Maintainers <debian-xfce@lists.debian.org>
 Uploaders: Yves-Alexis Perez <corsac@debian.org>
-Build-Depends: debhelper-compat (= 12),
+Build-Depends: debhelper-compat (= 13),
                gobject-introspection,
                gtk-doc-tools,
                intltool,
@@ -11,7 +11,7 @@ Build-Depends: debhelper-compat (= 12),
                libglib2.0-dev,
                xfce4-dev-tools
 Rules-Requires-Root: no
-Standards-Version: 4.5.1
+Standards-Version: 4.6.2
 Homepage: https://docs.xfce.org/xfce/libxfce4util/start
 Vcs-Git: https://salsa.debian.org/xfce-team/desktop/libxfce4util.git
 Vcs-Browser: https://salsa.debian.org/xfce-team/desktop/libxfce4util
@@ -52,8 +52,7 @@ Multi-Arch: same
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${gir:Depends}, ${misc:Depends}
 Description: Typelib file for libxfce4util
- libxfce4util is the basic utility function library for
- Xfce4.
+ libxfce4util is the basic utility function library for Xfce4.
  .
  This package provides the introspection data for libxfce4util.
 
@@ -74,5 +73,5 @@ Depends: ${misc:Depends}, ${shlibs:Depends}
 Breaks: libxfce4util4 (<< 4.6.1-2)
 Replaces: libxfce4util4 (<< 4.6.1-2)
 Description: common files for libxfce4util
- This package contains various infrastructure-independant common files for
+ This package contains various infrastructure-independent common files for
  libxfce4util, the Xfce utility library.

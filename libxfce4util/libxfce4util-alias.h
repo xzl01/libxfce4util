@@ -4,6 +4,8 @@
 
 #include <glib.h>
 
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
+
 #ifdef __LIBXFCE4UTIL_CONFIG_H__
 #if 1
 #endif
@@ -12,6 +14,35 @@
 #if 1
 extern __typeof (xfce_mkdirhier) IA__xfce_mkdirhier __attribute((visibility("hidden")));
 #define xfce_mkdirhier IA__xfce_mkdirhier
+
+extern __typeof (xfce_create_shared_thumbnail_path) IA__xfce_create_shared_thumbnail_path __attribute((visibility("hidden")));
+#define xfce_create_shared_thumbnail_path IA__xfce_create_shared_thumbnail_path
+
+#endif
+#endif
+#ifdef __XFCE_GIO_EXTENSIONS_H__
+#if 1
+extern __typeof (xfce_g_file_metadata_is_supported) IA__xfce_g_file_metadata_is_supported __attribute((visibility("hidden")));
+#define xfce_g_file_metadata_is_supported IA__xfce_g_file_metadata_is_supported
+
+extern __typeof (xfce_g_file_create_checksum) IA__xfce_g_file_create_checksum __attribute((visibility("hidden")));
+#define xfce_g_file_create_checksum IA__xfce_g_file_create_checksum
+
+extern __typeof (xfce_g_file_set_trusted) IA__xfce_g_file_set_trusted __attribute((visibility("hidden")));
+#define xfce_g_file_set_trusted IA__xfce_g_file_set_trusted
+
+extern __typeof (xfce_g_file_is_trusted) IA__xfce_g_file_is_trusted __attribute((visibility("hidden")));
+#define xfce_g_file_is_trusted IA__xfce_g_file_is_trusted
+
+#endif
+#endif
+#ifdef __XFCE_STRING_H__
+#if 1
+extern __typeof (xfce_g_string_append_quoted) IA__xfce_g_string_append_quoted __attribute((visibility("hidden")));
+#define xfce_g_string_append_quoted IA__xfce_g_string_append_quoted
+
+extern __typeof (xfce_str_replace) IA__xfce_str_replace __attribute((visibility("hidden")));
+#define xfce_str_replace IA__xfce_str_replace
 
 #endif
 #endif
@@ -91,6 +122,9 @@ extern __typeof (xfce_append_quoted) IA__xfce_append_quoted __attribute((visibil
 
 extern __typeof (xfce_expand_desktop_entry_field_codes) IA__xfce_expand_desktop_entry_field_codes __attribute((visibility("hidden"))) G_GNUC_MALLOC;
 #define xfce_expand_desktop_entry_field_codes IA__xfce_expand_desktop_entry_field_codes
+
+extern __typeof (xfce_unescape_desktop_entry_value) IA__xfce_unescape_desktop_entry_value __attribute((visibility("hidden"))) G_GNUC_MALLOC;
+#define xfce_unescape_desktop_entry_value IA__xfce_unescape_desktop_entry_value
 
 #endif
 #endif
@@ -230,5 +264,7 @@ extern __typeof (xfce_utf8_strndup) IA__xfce_utf8_strndup __attribute((visibilit
 
 #endif
 #endif
+
+G_GNUC_END_IGNORE_DEPRECATIONS
 
 #endif /* HAVE_GNUC_VISIBILITY */

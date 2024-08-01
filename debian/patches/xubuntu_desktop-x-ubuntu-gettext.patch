@@ -1,13 +1,21 @@
-Description: retrieve translations with the X-Ubuntu-Gettext-Domain key
- Display translations for patched desktop files from Ubuntu whose
- translations are stored in a different place ("X-Ubuntu-Gettext-Domain"
- key is used to find it).
-Author: Lionel Le Folgoc <mrpouit@ubuntu.com>
+From: Lionel Le Folgoc <mrpouit@ubuntu.com>
+Date: Fri, 26 Jul 2024 12:18:43 +0200
+Subject: retrieve translations with the X-Ubuntu-Gettext-Domain key
+
 Forwarded: not-needed
 
---- libxfce4util-4.6.0.orig/libxfce4util/xfce-rc.c
-+++ libxfce4util-4.6.0/libxfce4util/xfce-rc.c
-@@ -506,11 +506,30 @@
+Display translations for patched desktop files from Ubuntu whose
+translations are stored in a different place ("X-Ubuntu-Gettext-Domain"
+key is used to find it).
+---
+ libxfce4util/xfce-rc.c | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
+
+diff --git a/libxfce4util/xfce-rc.c b/libxfce4util/xfce-rc.c
+index ebb35c6..7cbe9b7 100644
+--- a/libxfce4util/xfce-rc.c
++++ b/libxfce4util/xfce-rc.c
+@@ -555,11 +555,30 @@ xfce_rc_read_entry (const XfceRc *rc,
                      const gchar  *fallback)
  {
    const gchar *value;

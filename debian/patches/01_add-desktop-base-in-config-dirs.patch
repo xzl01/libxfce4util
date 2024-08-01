@@ -1,12 +1,17 @@
-Description: use settings from desktop-base by default
-Author: Yves-Alexis Perez <corsac@debian.org>
-Forwarded: not-needed
+From: Yves-Alexis Perez <corsac@debian.org>
+Date: Fri, 26 Jul 2024 12:18:43 +0200
+Subject: use settings from desktop-base by default
 
-Index: libxfce4util-4.8.2/libxfce4util/xfce-resource.c
-===================================================================
---- libxfce4util-4.8.2.orig/libxfce4util/xfce-resource.c	2011-09-12 20:45:56.000000000 +0200
-+++ libxfce4util-4.8.2/libxfce4util/xfce-resource.c	2011-09-12 22:36:08.024034835 +0200
-@@ -221,6 +221,14 @@
+Forwarded: not-needed
+---
+ libxfce4util/xfce-resource.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/libxfce4util/xfce-resource.c b/libxfce4util/xfce-resource.c
+index 0c58fce..ca0c817 100644
+--- a/libxfce4util/xfce-resource.c
++++ b/libxfce4util/xfce-resource.c
+@@ -229,6 +229,14 @@ _res_init (void)
    _res_split_and_append (dirs, XFCE_RESOURCE_CONFIG);
    _res_split_and_append (SYSCONFDIR "/xdg", XFCE_RESOURCE_CONFIG);
  
@@ -14,7 +19,7 @@ Index: libxfce4util-4.8.2/libxfce4util/xfce-resource.c
 +  /* add desktop-base config files to the list. quick and dirty
 +   * patch for Etch
 +   */
-+  _res_split_and_append ("/usr/share/desktop-base/profiles/xdg-config", 
++  _res_split_and_append ("/usr/share/desktop-base/profiles/xdg-config",
 +		  XFCE_RESOURCE_CONFIG);
 +#endif
 +

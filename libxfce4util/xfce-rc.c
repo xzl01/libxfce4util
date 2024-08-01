@@ -88,12 +88,17 @@ void
 _xfce_rc_init (XfceRc *rc)
 {
 #ifdef HAVE_SETLOCALE
+  const gchar *language;
   gchar *locale;
 #endif
 
   _xfce_return_if_fail (rc != NULL);
 
 #ifdef HAVE_SETLOCALE
+  language = g_getenv ("LANGUAGE");
+  if (language != NULL)
+    rc->languages = g_strsplit (language, ":", -1);
+
   locale = setlocale (LC_MESSAGES, NULL);
   if (locale != NULL
       && strcmp (locale, "C") != 0
@@ -208,6 +213,9 @@ xfce_rc_close (XfceRc *rc)
 
   if (rc->locale != NULL)
     g_free (rc->locale);
+
+  if (rc->languages != NULL)
+    g_strfreev (rc->languages);
 
   g_free (rc);
 }
@@ -677,6 +685,9 @@ xfce_rc_read_int_entry (const XfceRc *rc,
  * Reads a list of strings in the entry specified by key in the current group.
  * The returned list has to be freed using g_strfreev() when no longer needed.
  *
+ * This does not support delimiter escaping. If you need this feature, use
+ * g_key_file_get_string_list() instead.
+ *
  * Return value: (transfer full): the list or NULL if the entry does not exist.
  *
  * Since: 4.2
@@ -783,6 +794,9 @@ xfce_rc_write_int_entry (XfceRc      *rc,
  * @separator : the list separator. Defaults to "," if %NULL.
  *
  * Wrapper for #xfce_rc_write_entry, that stores a string list @value.
+ *
+ * This does not support delimiter escaping. If you need this feature, use
+ * g_key_file_set_string_list() instead.
  *
  * Since: 4.2
  **/

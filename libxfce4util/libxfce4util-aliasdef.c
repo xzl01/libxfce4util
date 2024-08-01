@@ -4,6 +4,8 @@
 
 #include <glib.h>
 
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
+
 #if 1
 #ifdef __LIBXFCE4UTIL_CONFIG_C__
 #endif
@@ -12,6 +14,35 @@
 #ifdef __XFCE_FILEUTILS_C__
 #undef xfce_mkdirhier 
 extern __typeof (xfce_mkdirhier) xfce_mkdirhier __attribute((alias("IA__xfce_mkdirhier"), visibility("default")));
+
+#undef xfce_create_shared_thumbnail_path 
+extern __typeof (xfce_create_shared_thumbnail_path) xfce_create_shared_thumbnail_path __attribute((alias("IA__xfce_create_shared_thumbnail_path"), visibility("default")));
+
+#endif
+#endif
+#if 1
+#ifdef __XFCE_GIO_EXTENSIONS_C__
+#undef xfce_g_file_metadata_is_supported 
+extern __typeof (xfce_g_file_metadata_is_supported) xfce_g_file_metadata_is_supported __attribute((alias("IA__xfce_g_file_metadata_is_supported"), visibility("default")));
+
+#undef xfce_g_file_create_checksum 
+extern __typeof (xfce_g_file_create_checksum) xfce_g_file_create_checksum __attribute((alias("IA__xfce_g_file_create_checksum"), visibility("default")));
+
+#undef xfce_g_file_set_trusted 
+extern __typeof (xfce_g_file_set_trusted) xfce_g_file_set_trusted __attribute((alias("IA__xfce_g_file_set_trusted"), visibility("default")));
+
+#undef xfce_g_file_is_trusted 
+extern __typeof (xfce_g_file_is_trusted) xfce_g_file_is_trusted __attribute((alias("IA__xfce_g_file_is_trusted"), visibility("default")));
+
+#endif
+#endif
+#if 1
+#ifdef __XFCE_STRING_C__
+#undef xfce_g_string_append_quoted 
+extern __typeof (xfce_g_string_append_quoted) xfce_g_string_append_quoted __attribute((alias("IA__xfce_g_string_append_quoted"), visibility("default")));
+
+#undef xfce_str_replace 
+extern __typeof (xfce_str_replace) xfce_str_replace __attribute((alias("IA__xfce_str_replace"), visibility("default")));
 
 #endif
 #endif
@@ -91,6 +122,9 @@ extern __typeof (xfce_append_quoted) xfce_append_quoted __attribute((alias("IA__
 
 #undef xfce_expand_desktop_entry_field_codes 
 extern __typeof (xfce_expand_desktop_entry_field_codes) xfce_expand_desktop_entry_field_codes __attribute((alias("IA__xfce_expand_desktop_entry_field_codes"), visibility("default")));
+
+#undef xfce_unescape_desktop_entry_value 
+extern __typeof (xfce_unescape_desktop_entry_value) xfce_unescape_desktop_entry_value __attribute((alias("IA__xfce_unescape_desktop_entry_value"), visibility("default")));
 
 #endif
 #endif
@@ -230,5 +264,7 @@ extern __typeof (xfce_utf8_strndup) xfce_utf8_strndup __attribute((alias("IA__xf
 
 #endif
 #endif
+
+G_GNUC_END_IGNORE_DEPRECATIONS
 
 #endif /* HAVE_GNUC_VISIBILITY */

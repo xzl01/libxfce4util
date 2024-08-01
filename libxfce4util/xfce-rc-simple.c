@@ -46,11 +46,6 @@
 #define PATH_MAX 4096
 #endif
 
-#ifdef LINE_MAX
-#undef LINE_MAX
-#endif
-#define LINE_MAX 8192
-
 /* name of the NULL group */
 #define NULL_GROUP "[NULL]"
 
@@ -61,24 +56,23 @@ typedef struct _Group  Group;
 
 
 
-static Group*   simple_add_group  (XfceRcSimple *simple,
-                                   const gchar  *name);
-static Entry*   simple_add_entry  (XfceRcSimple *simple,
-                                   const gchar  *key,
-                                   const gchar  *value,
-                                   const gchar  *locale);
-static gboolean simple_parse_line (gchar        *line,
-                                   gchar       **section,
-                                   gchar       **key,
-                                   gchar       **value,
-                                   gchar       **locale);
-static gchar*   simple_escape     (gchar        *buffer,
-                                   gssize        size,
-                                   const gchar  *string);
-static gboolean simple_write      (XfceRcSimple *simple,
-                                   const gchar  *filename);
-static void     simple_entry_free (Entry        *entry);
-static void     simple_group_free (Group        *group);
+static Group*   simple_add_group     (XfceRcSimple *simple,
+                                      const gchar  *name);
+static Entry*   simple_add_entry     (XfceRcSimple *simple,
+                                      const gchar  *key,
+                                      const gchar  *value,
+                                      const gchar  *locale);
+static gboolean simple_parse_line    (gchar        *line,
+                                      gchar       **section,
+                                      gchar       **key,
+                                      gchar       **value,
+                                      gchar       **locale);
+static void     simple_write_escaped (const gchar  *string,
+                                      FILE         *fp);
+static gboolean simple_write         (XfceRcSimple *simple,
+                                      const gchar  *filename);
+static void     simple_entry_free    (Entry        *entry);
+static void     simple_group_free    (Group        *group);
 
 
 
@@ -411,20 +405,16 @@ simple_parse_line (gchar  *line,
 
 
 
-static gchar*
-simple_escape (gchar *buffer, gssize size, const gchar *string)
+static void
+simple_write_escaped (const gchar *string, FILE *fp)
 {
   const gchar *s;
-  gchar       *p;
 
   /* escape all whitespace at the beginning of the string */
-  for (p = buffer; p - buffer < size - 2 && *string == ' '; ++string)
-    {
-      *p++ = '\\';
-      *p++ = ' ';
-    }
+  for (; *string == ' '; ++string)
+    fputs ("\\ ", fp);
 
-  for (; p - buffer < size - 2 && *string != '\0'; ++string)
+  for (; *string != '\0'; ++string)
     switch (*string)
       {
       case ' ':
@@ -434,43 +424,35 @@ simple_escape (gchar *buffer, gssize size, const gchar *string)
         if (*s == '\0')
           {
             /* need to escape the space */
-            *p++ = '\\';
-            *p++ = ' ';
+            fputs ("\\ ", fp);
           }
         else
           {
             /* still non-whitespace, no need to escape */
-            *p++ = ' ';
+            fputc (' ', fp);
           }
         break;
 
       case '\n':
-        *p++ = '\\';
-        *p++ = 'n';
+        fputs ("\\n", fp);
         break;
 
       case '\t':
-        *p++ = '\\';
-        *p++ = 't';
+        fputs ("\\t", fp);
         break;
 
       case '\r':
-        *p++ = '\\';
-        *p++ = 'r';
+        fputs ("\\r", fp);
         break;
 
       case '\\':
-        *p++ = '\\';
-        *p++ = '\\';
+        fputs ("\\\\", fp);
         break;
 
       default:
-        *p++ = *string;
+        fputc (*string, fp);
         break;
       }
-
-  *p = '\0';
-  return buffer;
 }
 
 
@@ -481,7 +463,6 @@ simple_write (XfceRcSimple *simple, const gchar *filename)
   LEntry *lentry;
   Entry  *entry;
   Group  *group;
-  gchar   buffer[LINE_MAX];
   FILE   *fp;
 
   fp = fopen (filename, "w");
@@ -503,13 +484,20 @@ simple_write (XfceRcSimple *simple, const gchar *filename)
 
       for (entry = group->efirst; entry != NULL; entry = entry->next)
         {
-          simple_escape (buffer, LINE_MAX, entry->value);
-          fprintf (fp, "%s=%s\n", entry->key, buffer);
-
+          fprintf (fp, "%s=", entry->key);
+          simple_write_escaped (entry->value, fp);
+          fputc ('\n', fp);
+          /* 
+           * Write local dependent key/value pairs. E.g.
+           *   Name[da]=Xfce-session
+           *   Name[de]=Xfce-Sitzung
+           *   ...
+           */
           for (lentry = entry->lfirst; lentry != NULL; lentry = lentry->next)
             {
-              simple_escape (buffer, LINE_MAX, lentry->value);
-              fprintf (fp, "%s[%s]=%s\n", entry->key, lentry->locale, buffer);
+              fprintf (fp, "%s[%s]=", entry->key, lentry->locale);
+              simple_write_escaped (lentry->value, fp);
+              fputc ('\n', fp);
             }
         }
 
@@ -560,6 +548,26 @@ simple_group_free (Group *group)
 
   /* release the group */
   g_slice_free (Group, group);
+}
+
+
+
+static guint
+xfce_locale_match_rc (const XfceRc *rc, const gchar *locale)
+{
+  if (rc->languages != NULL)
+    {
+      for (gchar **plng = rc->languages; *plng != NULL; plng++)
+        {
+          guint match = xfce_locale_match (*plng, locale);
+          if (match > XFCE_LOCALE_NO_MATCH)
+            return match;
+        }
+    }
+  else if (rc->locale != NULL)
+    return xfce_locale_match (rc->locale, locale);
+
+  return XFCE_LOCALE_NO_MATCH;
 }
 
 
@@ -622,7 +630,8 @@ gboolean
 _xfce_rc_simple_parse (XfceRcSimple *simple)
 {
   gboolean readonly;
-  gchar    line[LINE_MAX];
+  gchar   *line = NULL;
+  size_t   line_len;
   gchar   *section;
   gchar   *locale;
   gchar   *value;
@@ -640,7 +649,7 @@ _xfce_rc_simple_parse (XfceRcSimple *simple)
   if (fp == NULL)
     return FALSE;
 
-  while (fgets (line, LINE_MAX, fp) != NULL)
+  while (getline (&line, &line_len, fp) != -1)
     {
       if (!simple_parse_line (line, &section, &key, &value, &locale))
         continue;
@@ -651,18 +660,24 @@ _xfce_rc_simple_parse (XfceRcSimple *simple)
           continue;
         }
 
+      if (key == NULL)
+        continue;
+
       if (locale == NULL)
         {
           simple_add_entry (simple, key, value, NULL);
           continue;
         }
 
-      if (rc->locale == NULL)
+      if (rc->locale == NULL && rc->languages == NULL)
         continue;
 
-      if (!readonly || xfce_locale_match (rc->locale, locale) > XFCE_LOCALE_NO_MATCH)
+      if (!readonly || xfce_locale_match_rc (rc, locale) > XFCE_LOCALE_NO_MATCH)
         simple_add_entry (simple, key, value, locale);
     }
+
+  if (line != NULL)
+    free (line);
 
   fclose (fp);
 
@@ -1007,14 +1022,14 @@ _xfce_rc_simple_read_entry (const XfceRc *rc,
   if (G_LIKELY (entry != NULL))
     {
       /* check for localized entry (best fit!) */
-      if (G_LIKELY (translated && rc->locale != NULL))
+      if (G_LIKELY (translated && (rc->locale != NULL || rc->languages != NULL)))
         {
           best_match = XFCE_LOCALE_NO_MATCH;
           best_value = NULL;
 
           for (lentry = entry->lfirst; lentry != NULL; lentry = lentry->next)
             {
-              match = xfce_locale_match (rc->locale, lentry->locale);
+              match = xfce_locale_match_rc (rc, lentry->locale);
               if (match == XFCE_LOCALE_FULL_MATCH)
                 {
                   /* FULL MATCH */
